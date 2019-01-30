@@ -1,7 +1,7 @@
 # Unsupervised Scalable Representation Learning for Multivariate Time Series -- Code
 
 This is the code corresponding to the experiments conducted for the work
-"Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi) (link to follow).
+["Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi)](https://hal.archives-ouvertes.fr/hal-01998101).
 
 ## Requirements
 
