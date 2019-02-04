@@ -1,7 +1,7 @@
 # Unsupervised Scalable Representation Learning for Multivariate Time Series -- Code
 
 This is the code corresponding to the experiments conducted for the work
-["Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi)](https://hal.archives-ouvertes.fr/hal-01998101).
+"Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi) [[arXiv]](https://arxiv.org/abs/1901.10738) [[HAL]](https://hal.archives-ouvertes.fr/hal-01998101).
 
 ## Requirements
 
@@ -73,7 +73,7 @@ To train a model on the MALLAT dataset from the UCR archive:
 `python3 ucr.py --dataset MALLAT --path path/to/MALLAT/folder/ --save_path '/path/to/save/models' --hyper default_hyperparameters.json [--cuda --gpu 0]`
 
 Adding the `--load` option allows to load a model from the specified save path.
-Training on the UEA archive is with `uea.py` is done in a similar way.
+Training on the UEA archive with `uea.py` is done in a similar way.
 
 ### Further Documentation
 
