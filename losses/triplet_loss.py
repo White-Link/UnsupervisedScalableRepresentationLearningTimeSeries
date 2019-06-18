@@ -14,6 +14,16 @@ class TripletLoss(torch.nn.modules.loss._Loss):
     which, if True, enables to save GPU memory by propagating gradients after
     each loss term, instead of doing it after computing the whole loss.
 
+    The triplets are chosen in the following manner. First the size of the
+    positive and negative samples are randomly chosen in the range of lengths
+    of time series in the dataset. The size of the anchor time series is
+    randomly chosen with the same length upper bound but the the length of the
+    positive samples as lower bound. An anchor of this length is then chosen
+    randomly in the given time series of the train set, and positive samples
+    are randomly chosen among subseries of the anchor. Finally, negative
+    samples of the chosen length are randomly chosen in random time series of
+    the train set.
+
     @param compared_length Maximum length of randomly chosen time series. If
            None, this parameter is ignored.
     @param nb_random_samples Number of negative samples per batch example.
@@ -103,7 +113,7 @@ class TripletLoss(torch.nn.modules.loss._Loss):
             # Negative loss: -logsigmoid of minus the dot product between
             # anchor and negative representations
             negative_representation = encoder(
-                torch.cat([train[samples[i, j]:samples[i, j] + 1][
+                torch.cat([train[samples[i, j]: samples[i, j] + 1][
                     :, :,
                     beginning_samples_neg[i, j]:
                     beginning_samples_neg[i, j] + length_pos_neg
@@ -141,6 +151,16 @@ class TripletLossVaryingLength(torch.nn.modules.loss._Loss):
     the end of a shorter time series), as well as a boolean which, if True,
     enables to save GPU memory by propagating gradients after each loss term,
     instead of doing it after computing the whole loss.
+
+    The triplets are chosen in the following manner. First the sizes of
+    positive and negative samples are randomly chosen in the range of lengths
+    of time series in the dataset. The size of the anchor time series is
+    randomly chosen with the same length upper bound but the the length of the
+    positive samples as lower bound. An anchor of this length is then chosen
+    randomly in the given time series of the train set, and positive samples
+    are randomly chosen among subseries of the anchor. Finally, negative
+    samples of the chosen length are randomly chosen in random time series of
+    the train set.
 
     @param compared_length Maximum length of randomly chosen time series. If
            None, this parameter is ignored.
@@ -258,7 +278,7 @@ class TripletLossVaryingLength(torch.nn.modules.loss._Loss):
             # Negative loss: -logsigmoid of minus the dot product between
             # anchor and negative representations
             negative_representation = torch.cat([encoder(
-                train[samples[i, j]:samples[i, j] + 1][
+                train[samples[i, j]: samples[i, j] + 1][
                     :, :,
                     beginning_samples_neg[i, j]:
                     beginning_samples_neg[i, j] + lengths_neg[i, j]

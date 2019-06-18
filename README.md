@@ -2,6 +2,7 @@
 
 This is the code corresponding to the experiments conducted for the work
 "Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi) [[arXiv]](https://arxiv.org/abs/1901.10738) [[HAL]](https://hal.archives-ouvertes.fr/hal-01998101).
+A previous version was presented at the [2nd LLD workshop](https://lld-workshop.github.io/) at ICLR 2019.
 
 ## Requirements
 
@@ -50,6 +51,9 @@ The datasets manipulated in this code can be downloaded on the following locatio
    the UCR archive) (see usage below);
  - `combine_uea.py` file: combines learned pairs of (encoder, classifier) for
    the UEA archive) (see usage below);
+ - `sparse_labeling.ipynb` file: file containing code to reproduce the results
+   of training an SVM on our representations for different numbers of available
+   labels;
  - `HouseholdPowerConsumption.ipynb` file: Jupyter notebook containing
    experiments on the Individual Household Electric Power Consumption dataset.
 
@@ -59,6 +63,10 @@ The datasets manipulated in this code can be downloaded on the following locatio
    concurrent methods) on the UCR archive;
  - `results_uea.csv` file: CSV file compiling all results (with those of
    concurrent methods) on the UEA archive;
+ - `results_sparse_labeling_TwoPatterns.csv` file: CSV file compiling means and
+   standard variations of five runs of learning an SVM on our representations
+   and the ResNet architecture described in the paper for different numbers
+   of available labels;
  - `cd.ipynb` file: Jupyter notebook containing the code to produce a critical
    difference diagram;
  - `stat_plots.ipynb` file: Jupyter notebook containing the code to produce
@@ -68,9 +76,9 @@ The datasets manipulated in this code can be downloaded on the following locatio
 
 ### Training on the UCR and UEA archives
 
-To train a model on the MALLAT dataset from the UCR archive:
+To train a model on the Mallat dataset from the UCR archive:
 
-`python3 ucr.py --dataset MALLAT --path path/to/MALLAT/folder/ --save_path '/path/to/save/models' --hyper default_hyperparameters.json [--cuda --gpu 0]`
+`python3 ucr.py --dataset Mallat --path path/to/Mallat/folder/ --save_path '/path/to/save/models' --hyper default_hyperparameters.json [--cuda --gpu 0]`
 
 Adding the `--load` option allows to load a model from the specified save path.
 Training on the UEA archive with `uea.py` is done in a similar way.

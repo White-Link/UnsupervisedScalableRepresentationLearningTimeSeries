@@ -2,7 +2,6 @@ import math
 import numpy
 import torch
 import sklearn
-import sklearn.linear_model
 
 import utils
 import losses
@@ -19,15 +18,15 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
     All inheriting classes should implement the get_params and set_params
     methods, as in the recommendations of scikit-learn.
 
-    @param compared_length Length of the compared positive and negative samples
-           in the loss. Ignored if None, or if the time series in the training
-           set have unequal lengths.
+    @param compared_length Maximum length of randomly chosen time series. If
+           None, this parameter is ignored.
     @param nb_random_samples Number of randomly chosen intervals to select the
            final negative sample in the loss.
     @param negative_penalty Multiplicative coefficient for the negative sample
            loss.
     @param batch_size Batch size used during the training of the encoder.
-    @param epochs Number of epochs to run during the training of the encoder.
+    @param nb_steps Number of optimization steps to perform for the training of
+           the encoder.
     @param lr learning rate of the Adam optimizer used to train the encoder.
     @param penalty Penalty term for the SVM classifier. If None and if the
            number of samples is high enough, performs a hyperparameter search
@@ -45,13 +44,13 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
     @param gpu GPU index to use, if CUDA is enabled.
     """
     def __init__(self, compared_length, nb_random_samples, negative_penalty,
-                 batch_size, epochs, lr, penalty, early_stopping,
+                 batch_size, nb_steps, lr, penalty, early_stopping,
                  encoder, params, in_channels, cuda=False, gpu=0):
         self.architecture = ''
         self.cuda = cuda
         self.gpu = gpu
         self.batch_size = batch_size
-        self.epochs = epochs
+        self.nb_steps = nb_steps
         self.lr = lr
         self.penalty = penalty
         self.early_stopping = early_stopping
@@ -210,15 +209,17 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
         )
 
         max_score = 0
+        i = 0  # Number of performed optimization steps
+        epochs = 0  # Number of performed epochs
         count = 0  # Count of number of epochs without improvement
         # Will be true if, by enabling epoch_selection, a model was selected
         # using cross-validation
         found_best = False
 
         # Encoder training
-        for i in range(self.epochs):
+        while i < self.nb_steps:
             if verbose:
-                print('Epoch: ', i + 1)
+                print('Epoch: ', epochs + 1)
             for batch in train_generator:
                 if self.cuda:
                     batch = batch.cuda(self.gpu)
@@ -233,6 +234,10 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
                     )
                 loss.backward()
                 self.optimizer.step()
+                i += 1
+                if i >= self.nb_steps:
+                    break
+            epochs += 1
             # Early stopping strategy
             if self.early_stopping is not None and y is not None and (
                 ratio >= 5 and train_size >= 50
@@ -405,15 +410,15 @@ class CausalCNNEncoderClassifier(TimeSeriesEncoderClassifier):
     SVM classifier on top of its computed representations in a scikit-learn
     class.
 
-    @param compared_length Length of the compared positive and negative samples
-           in the loss. Ignored if None, or if the time series in the training
-           set have unequal lengths.
+    @param compared_length Maximum length of randomly chosen time series. If
+           None, this parameter is ignored.
     @param nb_random_samples Number of randomly chosen intervals to select the
            final negative sample in the loss.
     @param negative_penalty Multiplicative coefficient for the negative sample
            loss.
     @param batch_size Batch size used during the training of the encoder.
-    @param epochs Number of epochs to run during the training of the encoder.
+    @param nb_steps Number of optimization steps to perform for the training of
+           the encoder.
     @param lr learning rate of the Adam optimizer used to train the encoder.
     @param penalty Penalty term for the SVM classifier. If None and if the
            number of samples is high enough, performs a hyperparameter search
@@ -435,13 +440,13 @@ class CausalCNNEncoderClassifier(TimeSeriesEncoderClassifier):
     @param gpu GPU index to use, if CUDA is enabled.
     """
     def __init__(self, compared_length=50, nb_random_samples=10,
-                 negative_penalty=1, batch_size=1, epochs=100, lr=0.001,
+                 negative_penalty=1, batch_size=1, nb_steps=2000, lr=0.001,
                  penalty=1, early_stopping=None, channels=10, depth=1,
                  reduced_size=10, out_channels=10, kernel_size=4,
                  in_channels=1, cuda=False, gpu=0):
         super(CausalCNNEncoderClassifier, self).__init__(
             compared_length, nb_random_samples, negative_penalty, batch_size,
-            epochs, lr, penalty, early_stopping,
+            nb_steps, lr, penalty, early_stopping,
             self.__create_encoder(in_channels, channels, depth, reduced_size,
                                   out_channels, kernel_size, cuda, gpu),
             self.__encoder_params(in_channels, channels, depth, reduced_size,
@@ -577,7 +582,7 @@ class CausalCNNEncoderClassifier(TimeSeriesEncoderClassifier):
             'nb_random_samples': self.loss.nb_random_samples,
             'negative_penalty': self.loss.negative_penalty,
             'batch_size': self.batch_size,
-            'epochs': self.epochs,
+            'nb_steps': self.nb_steps,
             'lr': self.lr,
             'penalty': self.penalty,
             'early_stopping': self.early_stopping,
@@ -592,12 +597,12 @@ class CausalCNNEncoderClassifier(TimeSeriesEncoderClassifier):
         }
 
     def set_params(self, compared_length, nb_random_samples, negative_penalty,
-                   batch_size, epochs, lr, penalty, early_stopping,
+                   batch_size, nb_steps, lr, penalty, early_stopping,
                    channels, depth, reduced_size, out_channels, kernel_size,
                    in_channels, cuda, gpu):
         self.__init__(
             compared_length, nb_random_samples, negative_penalty, batch_size,
-            epochs, lr, penalty, early_stopping, channels, depth,
+            nb_steps, lr, penalty, early_stopping, channels, depth,
             reduced_size, out_channels, kernel_size, in_channels, cuda, gpu
         )
         return self
