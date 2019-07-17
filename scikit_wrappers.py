@@ -2,6 +2,7 @@ import math
 import numpy
 import torch
 import sklearn
+import sklearn.svm
 
 import utils
 import losses
