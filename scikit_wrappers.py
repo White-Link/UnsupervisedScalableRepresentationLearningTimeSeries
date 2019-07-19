@@ -3,6 +3,9 @@ import numpy
 import torch
 import sklearn
 import sklearn.svm
+import sklearn.externals
+import sklearn.model_selection
+import joblib
 
 import utils
 import losses
@@ -88,7 +91,7 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
                '$(prefix_file)_$(architecture)_encoder.pth').
         """
         self.save_encoder(prefix_file)
-        sklearn.externals.joblib.dump(
+        joblib.dump(
             self.classifier,
             prefix_file + '_' + self.architecture + '_classifier.pkl'
         )
