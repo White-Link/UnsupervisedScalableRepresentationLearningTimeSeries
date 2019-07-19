@@ -324,7 +324,7 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
                         batch = batch.cuda(self.gpu)
                     features[
                         count * batch_size: (count + 1) * batch_size
-                    ] = self.encoder(batch)
+                    ] = self.encoder(batch).cpu()
                     count += 1
             else:
                 for batch in test_generator:
