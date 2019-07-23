@@ -3,6 +3,8 @@ import numpy
 import torch
 import sklearn
 import sklearn.svm
+import sklearn.externals
+import sklearn.model_selection
 
 import utils
 import losses
