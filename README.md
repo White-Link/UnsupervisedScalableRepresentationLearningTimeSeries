@@ -70,7 +70,8 @@ The datasets manipulated in this code can be downloaded on the following locatio
  - `cd.ipynb` file: Jupyter notebook containing the code to produce a critical
    difference diagram;
  - `stat_plots.ipynb` file: Jupyter notebook containing the code to produce
-   boxplots and histograms on the results for the UCR archive.
+   boxplots and histograms on the results for the UCR archive;
+ - `models` folder: contains a pretrained model for the UCR dataset CricketX.
 
 ## Usage
 
