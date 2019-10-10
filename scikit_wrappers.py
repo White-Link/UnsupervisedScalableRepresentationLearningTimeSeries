@@ -1,3 +1,21 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+
+#   http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+
 import math
 import numpy
 import torch
@@ -48,7 +66,8 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
     """
     def __init__(self, compared_length, nb_random_samples, negative_penalty,
                  batch_size, nb_steps, lr, penalty, early_stopping,
-                 encoder, params, in_channels, cuda=False, gpu=0):
+                 encoder, params, in_channels, out_channels, cuda=False,
+                 gpu=0):
         self.architecture = ''
         self.cuda = cuda
         self.gpu = gpu
@@ -60,6 +79,7 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
         self.encoder = encoder
         self.params = params
         self.in_channels = in_channels
+        self.out_channels = out_channels
         self.loss = losses.triplet_loss.TripletLoss(
             compared_length, nb_random_samples, negative_penalty
         )
@@ -136,6 +156,13 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
         """
         nb_classes = numpy.shape(numpy.unique(y, return_counts=True)[1])[0]
         train_size = numpy.shape(features)[0]
+        # To use a 1-NN classifier, no need for model selection, simply
+        # replace the code by the following:
+        # import sklearn.neighbors
+        # self.classifier = sklearn.neighbors.KNeighborsClassifier(
+        #     n_neighbors=1
+        # )
+        # return self.classifier.fit(features, y)
         self.classifier = sklearn.svm.SVC(
             C=1 / self.penalty
             if self.penalty is not None and self.penalty > 0
@@ -454,13 +481,12 @@ class CausalCNNEncoderClassifier(TimeSeriesEncoderClassifier):
                                   out_channels, kernel_size, cuda, gpu),
             self.__encoder_params(in_channels, channels, depth, reduced_size,
                                   out_channels, kernel_size),
-            in_channels, cuda, gpu
+            in_channels, out_channels, cuda, gpu
         )
         self.architecture = 'CausalCNN'
         self.channels = channels
         self.depth = depth
         self.reduced_size = reduced_size
-        self.out_channels = out_channels
         self.kernel_size = kernel_size
 
     def __create_encoder(self, in_channels, channels, depth, reduced_size,
@@ -607,5 +633,78 @@ class CausalCNNEncoderClassifier(TimeSeriesEncoderClassifier):
             compared_length, nb_random_samples, negative_penalty, batch_size,
             nb_steps, lr, penalty, early_stopping, channels, depth,
             reduced_size, out_channels, kernel_size, in_channels, cuda, gpu
+        )
+        return self
+
+
+class LSTMEncoderClassifier(TimeSeriesEncoderClassifier):
+    """
+    Wraps an LSTM encoder of time series as a PyTorch module and a SVM
+    classifier on top of its computed representations in a scikit-learn
+    class.
+
+    @param compared_length Maximum length of randomly chosen time series. If
+           None, this parameter is ignored.
+    @param nb_random_samples Number of randomly chosen intervals to select the
+           final negative sample in the loss.
+    @param negative_penalty Multiplicative coefficient for the negative sample
+           loss.
+    @param batch_size Batch size used during the training of the encoder.
+    @param nb_steps Number of optimization steps to perform for the training of
+           the encoder.
+    @param lr learning rate of the Adam optimizer used to train the encoder.
+    @param penalty Penalty term for the SVM classifier. If None and if the
+           number of samples is high enough, performs a hyperparameter search
+           to find a suitable constant.
+    @param early_stopping Enables, if not None, early stopping heuristic
+           for the training of the representations, based on the final
+           score. Representations are still learned unsupervisedly in this
+           case. If the number of samples per class is no more than 10,
+           disables this heuristic. If not None, accepts an integer
+           representing the patience of the early stopping strategy.
+    @param cuda Transfers, if True, all computations to the GPU.
+    @param in_channels Number of input channels of the time series.
+    @param gpu GPU index to use, if CUDA is enabled.
+    """
+    def __init__(self, compared_length=50, nb_random_samples=10,
+                 negative_penalty=1, batch_size=1, nb_steps=2000, lr=0.001,
+                 penalty=1, early_stopping=None, in_channels=1, cuda=False,
+                 gpu=0):
+        super(LSTMEncoderClassifier, self).__init__(
+            compared_length, nb_random_samples, negative_penalty, batch_size,
+            nb_steps, lr, penalty, early_stopping,
+            self.__create_encoder(cuda, gpu), {}, in_channels, 160, cuda, gpu
+        )
+        assert in_channels == 1
+        self.architecture = 'LSTM'
+
+    def __create_encoder(self, cuda, gpu):
+        encoder = networks.lstm.LSTMEncoder()
+        encoder.double()
+        if cuda:
+            encoder.cuda(gpu)
+        return encoder
+
+    def get_params(self, deep=True):
+        return {
+            'compared_length': self.loss.compared_length,
+            'nb_random_samples': self.loss.nb_random_samples,
+            'negative_penalty': self.loss.negative_penalty,
+            'batch_size': self.batch_size,
+            'nb_steps': self.nb_steps,
+            'lr': self.lr,
+            'penalty': self.penalty,
+            'early_stopping': self.early_stopping,
+            'in_channels': self.in_channels,
+            'cuda': self.cuda,
+            'gpu': self.gpu
+        }
+
+    def set_params(self, compared_length, nb_random_samples, negative_penalty,
+                   batch_size, nb_steps, lr, penalty, early_stopping,
+                   in_channels, cuda, gpu):
+        self.__init__(
+            compared_length, nb_random_samples, negative_penalty, batch_size,
+            nb_steps, lr, penalty, early_stopping, in_channels, cuda, gpu
         )
         return self
