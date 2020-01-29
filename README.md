@@ -1,6 +1,6 @@
 # Unsupervised Scalable Representation Learning for Multivariate Time Series -- Code
 
-This is the code corresponding to the experiments conducted for the work "Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi) [[arXiv]](https://arxiv.org/abs/1901.10738) [[HAL]](https://hal.archives-ouvertes.fr/hal-01998101), presented at NeurIPS 2019.
+This is the code corresponding to the experiments conducted for the work "Unsupervised Scalable Representation Learning for Multivariate Time Series" (Jean-Yves Franceschi, Aymeric Dieuleveut and Martin Jaggi) [[NeurIPS]](https://papers.nips.cc/paper/8713-unsupervised-scalable-representation-learning-for-multivariate-time-series) [[arXiv]](https://arxiv.org/abs/1901.10738) [[HAL]](https://hal.archives-ouvertes.fr/hal-01998101), presented at NeurIPS 2019.
 A previous version was presented at the [2nd LLD workshop](https://lld-workshop.github.io/) at ICLR 2019.
 
 ## Requirements
