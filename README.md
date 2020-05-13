@@ -10,7 +10,7 @@ Experiments were done with the following package versions for Python 3.6:
  - Matplotlib (`matplotlib`) v3.0.0;
  - Orange (`Orange`) v3.18.0;
  - Pandas (`pandas`) v0.23.4;
- - `python-weka-wrapper3`(v0.1.6) (for multivariate time series);
+ - `python-weka-wrapper3` v0.1.6 for multivariate time series (requires Oracle JDK 8 or OpenJDK 8);
  - PyTorch (`torch`) v0.4.1 with CUDA 9.0;
  - Scikit-learn (`sklearn`) v0.20.0;
  - Scipy (`scipy`) v1.1.0.
