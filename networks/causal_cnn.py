@@ -88,8 +88,7 @@ class CausalConvolutionBlock(torch.nn.Module):
     @param in_channels Number of input channels.
     @param out_channels Number of output channels.
     @param kernel_size Kernel size of the applied non-residual convolutions.
-    @param dilation Zero-padding applied to the left of the input of the
-           non-residual convolutions.
+    @param dilation Dilation parameter of non-residual convolutions.
     @param final Disables, if True, the last activation function.
     """
     def __init__(self, in_channels, out_channels, kernel_size, dilation,
