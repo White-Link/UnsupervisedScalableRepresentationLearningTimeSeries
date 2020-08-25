@@ -95,8 +95,8 @@ def load_UCR_dataset(path, dataset):
         'UMD'
     ]:
         return train, train_labels, test, test_labels
-    mean = numpy.nanmean(numpy.concatenate([train, test]))
-    var = numpy.nanvar(numpy.concatenate([train, test]))
+    mean = numpy.nanmean(train))
+    var = numpy.nanvar(train))
     train = (train - mean) / math.sqrt(var)
     test = (test - mean) / math.sqrt(var)
     return train, train_labels, test, test_labels
