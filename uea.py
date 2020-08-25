@@ -71,10 +71,10 @@ def load_UEA_dataset(path, dataset):
         for j in range(nb_dims):
             test[i, j] = time_series.get_instance(j).values
 
-    # Normalizing dimensions independently
+    # Normalizing dimensions independently (by column) and regarding mean and variance of the training data only
     for j in range(nb_dims):
-        mean = numpy.mean(numpy.concatenate([train[:, j], test[:, j]]))
-        var = numpy.var(numpy.concatenate([train[:, j], test[:, j]]))
+        mean = numpy.mean(train[:, j]))
+        var = numpy.var(train[:, j]))
         train[:, j] = (train[:, j] - mean) / math.sqrt(var)
         test[:, j] = (test[:, j] - mean) / math.sqrt(var)
 
