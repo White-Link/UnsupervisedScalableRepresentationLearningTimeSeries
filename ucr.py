@@ -95,6 +95,10 @@ def load_UCR_dataset(path, dataset):
         'UMD'
     ]:
         return train, train_labels, test, test_labels
+    # Post-publication note:
+    # Using the testing set to normalize might bias the learned network,
+    # but with a limited impact on the reported results on few datasets.
+    # See the related discussion here: https://github.com/White-Link/UnsupervisedScalableRepresentationLearningTimeSeries/pull/13.
     mean = numpy.nanmean(numpy.concatenate([train, test]))
     var = numpy.nanvar(numpy.concatenate([train, test]))
     train = (train - mean) / math.sqrt(var)

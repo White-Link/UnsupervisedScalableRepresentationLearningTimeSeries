@@ -73,6 +73,10 @@ def load_UEA_dataset(path, dataset):
 
     # Normalizing dimensions independently
     for j in range(nb_dims):
+        # Post-publication note:
+        # Using the testing set to normalize might bias the learned network,
+        # but with a limited impact on the reported results on few datasets.
+        # See the related discussion here: https://github.com/White-Link/UnsupervisedScalableRepresentationLearningTimeSeries/pull/13.
         mean = numpy.mean(numpy.concatenate([train[:, j], test[:, j]]))
         var = numpy.var(numpy.concatenate([train[:, j], test[:, j]]))
         train[:, j] = (train[:, j] - mean) / math.sqrt(var)
