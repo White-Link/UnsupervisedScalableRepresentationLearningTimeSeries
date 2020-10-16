@@ -91,4 +91,4 @@ See the code documentation for more details. `ucr.py`, `uea.py`,
 
 ## Pretrained Models
 
-Pretrained models are available on request.
+Pretrained models are downloadable at [https://data.lip6.fr/usrlts/](https://data.lip6.fr/usrlts/).
