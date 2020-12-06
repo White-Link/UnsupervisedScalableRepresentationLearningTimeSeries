@@ -169,44 +169,43 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
             else numpy.inf,
             gamma='scale'
         )
-        if train_size // nb_classes < 5 or train_size < 50:
+        if train_size // nb_classes < 5 or train_size < 50 or self.penalty is not None:
             return self.classifier.fit(features, y)
         else:
-            if self.penalty is None:
-                grid_search = sklearn.model_selection.GridSearchCV(
-                    self.classifier, {
-                        'C': [
-                            0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000,
-                            numpy.inf
-                        ],
-                        'kernel': ['rbf'],
-                        'degree': [3],
-                        'gamma': ['scale'],
-                        'coef0': [0],
-                        'shrinking': [True],
-                        'probability': [False],
-                        'tol': [0.001],
-                        'cache_size': [200],
-                        'class_weight': [None],
-                        'verbose': [False],
-                        'max_iter': [10000000],
-                        'decision_function_shape': ['ovr'],
-                        'random_state': [None]
-                    },
-                    cv=5, iid=False, n_jobs=5
+            grid_search = sklearn.model_selection.GridSearchCV(
+                self.classifier, {
+                    'C': [
+                        0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000,
+                        numpy.inf
+                    ],
+                    'kernel': ['rbf'],
+                    'degree': [3],
+                    'gamma': ['scale'],
+                    'coef0': [0],
+                    'shrinking': [True],
+                    'probability': [False],
+                    'tol': [0.001],
+                    'cache_size': [200],
+                    'class_weight': [None],
+                    'verbose': [False],
+                    'max_iter': [10000000],
+                    'decision_function_shape': ['ovr'],
+                    'random_state': [None]
+                },
+                cv=5, iid=False, n_jobs=5
+            )
+            if train_size <= 10000:
+                grid_search.fit(features, y)
+            else:
+                # If the training set is too large, subsample 10000 train
+                # examples
+                split = sklearn.model_selection.train_test_split(
+                    features, y,
+                    train_size=10000, random_state=0, stratify=y
                 )
-                if train_size <= 10000:
-                    grid_search.fit(features, y)
-                else:
-                    # If the training set is too large, subsample 10000 train
-                    # examples
-                    split = sklearn.model_selection.train_test_split(
-                        features, y,
-                        train_size=10000, random_state=0, stratify=y
-                    )
-                    grid_search.fit(split[0], split[2])
-                self.classifier = grid_search.best_estimator_
-                return self.classifier
+                grid_search.fit(split[0], split[2])
+            self.classifier = grid_search.best_estimator_
+            return self.classifier
 
     def fit_encoder(self, X, y=None, save_memory=False, verbose=False):
         """
