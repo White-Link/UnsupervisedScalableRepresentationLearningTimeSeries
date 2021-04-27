@@ -89,6 +89,19 @@ See the code documentation for more details. `ucr.py`, `uea.py`,
 `transfer_ucr.py`, `combine_ucr.py` and `combine_uea.py` can be called with the
 `-h` option for additional help.
 
+### Hyperparameters
+
+Hyperparameters are described in Section S2.2 of the paper.
+
+For the UCR and UEA hyperparameters, two values were switched by mistake.
+One should read, as reflected in [the example configuration file](default_hyperparameters.json):
+> - number of output channels of the causal network (before max pooling): 160;
+> - dimension of the representations: 320.
+>
+instead of
+> - number of output channels of the causal network (before max pooling): 320;
+> - dimension of the representations: 160.
+
 ## Pretrained Models
 
 Pretrained models are downloadable at [https://data.lip6.fr/usrlts/](https://data.lip6.fr/usrlts/).
