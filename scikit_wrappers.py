@@ -358,9 +358,10 @@ class TimeSeriesEncoderClassifier(sklearn.base.BaseEstimator,
                     length = batch.size(2) - torch.sum(
                         torch.isnan(batch[0, 0])
                     ).data.cpu().numpy()
+                    # 2024-07-31: quick fix when a whole series is nan
                     features[count: count + 1] = self.encoder(
                         batch[:, :, :length]
-                    ).cpu()
+                    ).cpu() if length != 0 else numpy.nan
                     count += 1
 
         self.encoder = self.encoder.train()
