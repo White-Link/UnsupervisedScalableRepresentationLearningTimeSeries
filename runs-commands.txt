@@ -1,0 +1,14 @@
+to get the accuarcy of SVM, F1 score of TICC
+
+Encoder-UCR-Dataset-CommandToRun
+python.exe ucr.py --dataset Adiac --path "C:\Users\VW23R3P\OneDrive - Volkswagen AG\Documents\Tesla\UCRArchive_2018\UCRArchive_2018" --save_path "models\ucr" --hyper "default_hyperparameters.json"
+
+Encoder-UEA-Dataset-CommandToRun
+Set-Location "c:\Users\VW23R3P\OneDrive - Volkswagen AG\Documents\Tesla\UnsupervisedScalableRepresentationLearningTimeSeries-master\UnsupervisedScalableRepresentationLearningTimeSeries-master"; $env:JAVA_HOME="C:\Users\VW23R3P\AppData\Local\anaconda3\Library"; $env:Path="$env:JAVA_HOME\bin;$env:Path"; java -version; python uea.py --dataset BasicMotions --path "c:\Users\VW23R3P\OneDrive - Volkswagen AG\Documents\Tesla\UAEArchive_2018" --save_path "models\uea" --hyper "default_hyperparameters.json"
+
+TICC-Clustring-UEA-Dataset-CommandToRun
+$env:JAVA_HOME="C:\Users\VW23R3P\AppData\Local\anaconda3\Library"; $env:Path="$env:JAVA_HOME\bin;$env:Path"; & "C:\Users\VW23R3P\AppData\Local\anaconda3\python.exe" apply_ticc_on_tloss.py --dataset BasicMotions --uea_path "C:\Users\VW23R3P\OneDrive - Volkswagen AG\Documents\Tesla\UAEArchive_2018" --model_path "models\uea" --output_path "outputs\ticc" --sample_index 0 --encoder_window 24 --ticc_repo "..\..\TICC-master\TICC-master" --ticc_clusters 4 --ticc_window_size 5 --ticc_lambda 0.11 --ticc_beta 400 --ticc_max_iters 5 --ticc_num_proc 1
+
+TICC-Clustring-UCR-Dataset-CommandToRun
+& "C:\Users\VW23R3P\AppData\Local\anaconda3\python.exe" apply_ticc_on_tloss.py --dataset Car --ucr_path "C:\Users\VW23R3P\OneDrive - Volkswagen AG\Documents\Tesla\UCRArchive_2018\UCRArchive_2018" --model_path "models\ucr" --output_path "outputs\ticc" --sample_index 0 --encoder_window 24 --ticc_repo "..\..\TICC-master\TICC-master" --ticc_clusters 4 --ticc_window_size 1 --ticc_lambda 0.11 --ticc_beta 400 --ticc_max_iters 4 --ticc_num_proc 1
+

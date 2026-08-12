@@ -35,7 +35,7 @@ The datasets manipulated in this code can be downloaded on the following locatio
  - `networks` folder: implements encoder and its building blocks (dilated
    convolutions, causal CNN);
  - `scikit_wrappers.py` file: implements classes inheriting Scikit-learn
-   classifiers that wrap an encoder and a SVM classifier.
+   classifiers that wrap an encoder and SVM classifier.
  - `utils.py` file: implements custom PyTorch datasets;
  - `default_hyperparameters.json` file: example of a JSON file containing the
    hyperparameters of a pair (encoder, classifier).
@@ -105,3 +105,6 @@ instead of
 ## Pretrained Models
 
 Pretrained models are downloadable at [https://data.lip6.fr/usrlts/](https://data.lip6.fr/usrlts/).
+
+## Added
+run-commands.txt 
